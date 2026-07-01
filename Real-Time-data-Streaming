@@ -1,0 +1,67 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import time
+
+data = pd.read_csv("iot_telemetry_data.csv")
+
+print("First 5 Records")
+print(data.head())
+
+print("\nDataset Information")
+print(data.info())
+
+print("\nStatistical Summary")
+print(data.describe())
+
+print("\nMissing Values")
+print(data.isnull().sum())
+
+data = data.dropna()
+
+stream = data.head(100)
+
+time_data = []
+temperature = []
+humidity = []
+co = []
+smoke = []
+
+plt.ion()
+
+for i, row in stream.iterrows():
+
+    time_data.append(len(time_data) + 1)
+    temperature.append(row["temp"])
+    humidity.append(row["humidity"])
+    co.append(row["co"])
+    smoke.append(row["smoke"])
+
+    print("\nTimestamp:", row["ts"])
+    print("Device:", row["device"])
+    print("Temperature:", row["temp"])
+    print("Humidity:", row["humidity"])
+    print("CO:", row["co"])
+    print("Smoke:", row["smoke"])
+
+    plt.clf()
+
+    plt.plot(time_data, temperature, label="Temperature")
+    plt.plot(time_data, humidity, label="Humidity")
+    plt.plot(time_data, co, label="CO")
+    plt.plot(time_data, smoke, label="Smoke")
+
+    plt.title("Real-time Environmental Sensor Data Streaming")
+    plt.xlabel("Reading Number")
+    plt.ylabel("Sensor Value")
+    plt.legend()
+
+    plt.pause(0.5)
+    time.sleep(0.5)
+
+plt.ioff()
+plt.show()
+
+stream.to_csv("streamed_sensor_data.csv", index=False)
+
+print("\nStreaming Completed Successfully")
+print("Dataset saved as streamed_sensor_data.csv")
